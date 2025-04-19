@@ -30,7 +30,7 @@ yarn-error.log*
 *.swo
 
 # Rust
-/target/
+/wasm-lib/target
 **/*.rs.bk
 Cargo.lock
 
