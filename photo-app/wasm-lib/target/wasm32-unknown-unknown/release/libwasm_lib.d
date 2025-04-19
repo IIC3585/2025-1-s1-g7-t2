@@ -1,1 +1,0 @@
-/Users/jwork/Documents/PUC/Web\ Avanzado/2025-1-s1-g7-t2/photo-app/wasm-lib/target/wasm32-unknown-unknown/release/libwasm_lib.rlib: /Users/jwork/Documents/PUC/Web\ Avanzado/2025-1-s1-g7-t2/photo-app/wasm-lib/src/lib.rs
