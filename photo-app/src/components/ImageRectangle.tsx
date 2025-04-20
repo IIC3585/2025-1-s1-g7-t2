@@ -3,6 +3,7 @@ import styled from '@emotion/styled';
 import { useTheme } from '../contexts/ThemeContext';
 import { saveImageToDB } from '../utils/indexedDB';
 import { Toast } from './Toast';
+import init, { grayscale, blur, pink_filter } from '../../wasm-lib/pkg/wasm_lib';
 
 const ImageContainer = styled.div`
   width: 100%;
@@ -110,6 +111,15 @@ const ButtonContainer = styled.div`
   z-index: 2;
 `;
 
+const FiltersButtonContainer = styled.div`
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 16px;
+`;
+
 const ActionButton = styled.button`
   background-color: var(--primary-color);
   color: white;
@@ -133,6 +143,14 @@ const ActionButton = styled.button`
     background-color: var(--secondary-color);
     transform: scale(1.05);
   }
+  
+  &:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+  }
 
   @media (max-width: 768px) {
     padding: 8px 16px;
@@ -149,10 +167,12 @@ const ActionButton = styled.button`
 const ImageRectangle: React.FC = () => {
   const { colors } = useTheme();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [isDragActive, setIsDragActive] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cumulativeFilters, setCumulativeFilters] = useState<boolean>(false);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -163,7 +183,9 @@ const ImageRectangle: React.FC = () => {
       if (file.type.startsWith('image/')) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          setSelectedImage(e.target?.result as string);
+            const imageUrl = e.target?.result as string;
+            setSelectedImage(imageUrl);
+            setOriginalImage(imageUrl); // Guarda la imagen original
         };
         reader.readAsDataURL(file);
       }
@@ -189,7 +211,9 @@ const ImageRectangle: React.FC = () => {
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          setSelectedImage(e.target?.result as string);
+            const imageUrl = e.target?.result as string;
+            setSelectedImage(imageUrl);
+            setOriginalImage(imageUrl); // Guarda la imagen original
         };
         reader.readAsDataURL(file);
       }
@@ -216,7 +240,9 @@ const ImageRectangle: React.FC = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSelectedImage(e.target?.result as string);
+        const imageUrl = e.target?.result as string;
+          setSelectedImage(imageUrl);
+          setOriginalImage(imageUrl); // Guarda la imagen original
       };
       reader.readAsDataURL(file);
     }
@@ -228,7 +254,135 @@ const ImageRectangle: React.FC = () => {
     }
   };
 
+  const processImage = async (file: File, filter: string) => {
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+
+    await init();
+
+    let result;
+    switch (filter) {
+      case 'grayscale':
+      result = grayscale(uint8Array);
+      break;
+      case 'blur':
+      result = blur(uint8Array, 5);
+      break;
+      case 'pink':
+      result = pink_filter(uint8Array);
+      break;
+      default:
+      throw new Error(`Unsupported filter: ${filter}`);
+    }
+    const blob = new Blob([result], { type: "image/png" });
+    const url = URL.createObjectURL(blob);
+    return url;
+  };
+
+  const handleApplyGrayscale = async () => {
+    if (!selectedImage || !originalImage) return;
+    
+    // First we need to get the file from the current image
+    // We can create a fetch request to the current image URL and convert it to a File
+    try {
+      const sourceImage = cumulativeFilters ? selectedImage : originalImage;
+      const response = await fetch(sourceImage);
+      const blob = await response.blob();
+      const file = new File([blob], "image.png", { type: "image/png" });
+      
+      const processedImageUrl = await processImage(file, 'grayscale');
+      setSelectedImage(processedImageUrl);
+      
+      setToastMessage('Grayscale filter applied successfully!');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error applying grayscale filter:', error);
+      setToastMessage('Failed to apply filter. Please try again.');
+      setShowToast(true);
+    }
+  };
+
+  const handleApplyBlur = async () => {
+    if (!selectedImage || !originalImage) return;
+    
+    try {
+      const sourceImage = cumulativeFilters ? selectedImage : originalImage;
+      const response = await fetch(sourceImage);
+      const blob = await response.blob();
+      const file = new File([blob], "image.png", { type: "image/png" });
+      
+      const processedImageUrl = await processImage(file, 'blur');
+      setSelectedImage(processedImageUrl);
+      
+      setToastMessage('Blur filter applied successfully!');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error applying blur filter:', error);
+      setToastMessage('Failed to apply filter. Please try again.');
+      setShowToast(true);
+    }
+  };
+
+  const handleApplyPinkFilter = async () => {
+    if (!selectedImage || !originalImage) return;
+    
+    try {
+      const sourceImage = cumulativeFilters ? selectedImage : originalImage;
+      const response = await fetch(sourceImage);
+      const blob = await response.blob();
+      const file = new File([blob], "image.png", { type: "image/png" });
+      
+      const processedImageUrl = await processImage(file, 'pink');
+      setSelectedImage(processedImageUrl);
+      
+      setToastMessage('Pink filter applied successfully!');
+      setShowToast(true);
+    } catch (error) {
+      console.error('Error applying pink filter:', error);
+      setToastMessage('Failed to apply filter. Please try again.');
+      setShowToast(true);
+    }
+  };
+
+  const handleRestoreOriginal = () => {
+    if (originalImage) {
+      setSelectedImage(originalImage);
+      setToastMessage('Original image restored!');
+      setShowToast(true);
+    }
+  };
+  const toggleCumulativeFilters = () => {
+    setCumulativeFilters(!cumulativeFilters);
+    setToastMessage(`Cumulative filters ${!cumulativeFilters ? 'enabled' : 'disabled'}`);
+    setShowToast(true);
+  };
+
+
   return (
+    <div>
+
+    <h3 style={{color: colors.text, 
+    textAlign: 'center', 
+    margin: '0 auto', 
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '20px'} }>
+        Filters:
+    </h3>
+    <FiltersButtonContainer>
+      <ActionButton onClick={handleApplyGrayscale} disabled={!selectedImage}>
+        Gray Scale
+      </ActionButton>
+      <ActionButton onClick={handleApplyBlur} disabled={!selectedImage}>
+        Blur
+      </ActionButton>
+      <ActionButton onClick={handleApplyPinkFilter} disabled={!selectedImage}>
+        Pink
+      </ActionButton>
+    </FiltersButtonContainer>
+
     <ImageContainer>
       <input
         type="file"
@@ -239,6 +393,7 @@ const ImageRectangle: React.FC = () => {
       />
       {selectedImage ? (
         <>
+    
           <ImagePreview>
             <PreviewImage src={selectedImage} alt="Selected" />
             <ButtonContainer>
@@ -277,6 +432,27 @@ const ImageRectangle: React.FC = () => {
         <Toast message={toastMessage} onClose={() => setShowToast(false)} />
       )}
     </ImageContainer>
+    <FiltersButtonContainer>
+      <ActionButton onClick={handleRestoreOriginal} disabled={!selectedImage}>
+        <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round" className="icon icon-tabler icons-tabler-outline icon-tabler-restore">
+        <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+        <path d="M3.06 13a9 9 0 1 0 .49 -4.087" />
+        <path d="M3 4.001v5h5" /><path d="M12 12m-1 0a1 1 0 1 0 2 0a1 1 0 1 0 -2 0" />
+        </svg>
+        Restore Original
+      </ActionButton>
+      <ActionButton 
+          onClick={toggleCumulativeFilters} 
+          disabled={!selectedImage}
+          style={cumulativeFilters ? { backgroundColor: 'var(--secondary-color)' } : {}}
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 9h-8V1h-4v8H2v4h8v8h4v-8h8V9z"/>
+          </svg>
+          {cumulativeFilters ? 'Cumulative filters: ON' : 'Cumulative filters: OFF'}
+        </ActionButton>
+    </FiltersButtonContainer>
+    </div>
   );
 };
 

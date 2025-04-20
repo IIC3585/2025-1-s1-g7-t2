@@ -61,12 +61,14 @@ const Title = styled.h1`
   }
 `;
 
+
 function App() {
   return (
     <ThemeProvider>
       <SplashScreen />
       <AppContainer>
         <ThemeToggle />
+
         <SavedImagesButtonComponent />
         <MainContent>
           <Title>CropCut</Title>
