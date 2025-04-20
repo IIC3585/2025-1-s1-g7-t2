@@ -11,13 +11,22 @@ export default defineConfig({
     topLevelAwait(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
       manifest: {
-        name: 'PWA WASM App',
-        short_name: 'PWAWASM',
-        description: 'A PWA with WASM features',
-        theme_color: '#ffffff',
+        name: 'Photo App',
+        short_name: 'PhotoApp',
+        description: 'A PWA photo application with WASM features',
+        theme_color: '#2196f3',
+        background_color: '#ffffff',
+        display: 'standalone',
+        orientation: 'portrait',
+        start_url: '/',
         icons: [
+          {
+            src: 'pwa-64x64.png',
+            sizes: '64x64',
+            type: 'image/png'
+          },
           {
             src: 'pwa-192x192.png',
             sizes: '192x192',
@@ -26,7 +35,37 @@ export default defineConfig({
           {
             src: 'pwa-512x512.png',
             sizes: '512x512',
-            type: 'image/png'
+            type: 'image/png',
+            purpose: 'any'
+          },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
+          }
+        ],
+        screenshots: [
+          {
+            src: 'screenshot1.png',
+            sizes: '1280x720',
+            type: 'image/png',
+            label: 'Home Screen'
+          }
+        ]
+      },
+      workbox: {
+        runtimeCaching: [
+          {
+            urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif)$/,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'images-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 30 * 24 * 60 * 60 // 30 days
+              }
+            }
           }
         ]
       }
