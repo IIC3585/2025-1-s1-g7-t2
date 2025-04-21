@@ -1,7 +1,6 @@
-import React, { useEffect } from 'react';
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 
-const ToastContainer = styled.div`
+export const ToastContainer = styled.div`
   position: fixed;
   bottom: 20px;
   left: 50%;
@@ -34,20 +33,3 @@ const ToastContainer = styled.div`
     }
   }
 `;
-
-interface ToastProps {
-  message: string;
-  onClose: () => void;
-}
-
-export const Toast: React.FC<ToastProps> = ({ message, onClose }) => {
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      onClose();
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  return <ToastContainer>{message}</ToastContainer>;
-}; 
