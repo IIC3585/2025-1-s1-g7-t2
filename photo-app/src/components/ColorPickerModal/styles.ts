@@ -1,8 +1,6 @@
-import React from 'react';
-import styled from '@emotion/styled';
-import { useTheme } from '../contexts/ThemeContext';
+import styled from "@emotion/styled";
 
-const SidePanel = styled.div`
+export const SidePanel = styled.div`
   position: fixed;
   top: 50%;
   left: 50%;
@@ -17,19 +15,19 @@ const SidePanel = styled.div`
   max-width: 400px;
 `;
 
-const ColorPickerContainer = styled.div`
+export const ColorPickerContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 16px;
 `;
 
-const ColorRow = styled.div`
+export const ColorRow = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
 `;
 
-const ColorInput = styled.input`
+export const ColorInput = styled.input`
   width: 48px;
   height: 48px;
   padding: 0;
@@ -37,32 +35,32 @@ const ColorInput = styled.input`
   border-radius: 8px;
   cursor: pointer;
   background-color: transparent;
-  
+
   &::-webkit-color-swatch-wrapper {
     padding: 0;
   }
-  
+
   &::-webkit-color-swatch {
     border: none;
     border-radius: 6px;
   }
 `;
 
-const Label = styled.label`
+export const Label = styled.label`
   font-size: 1rem;
   color: var(--text-color);
   min-width: 100px;
   text-transform: capitalize;
 `;
 
-const Title = styled.h3`
+export const Title = styled.h3`
   color: var(--primary-color);
   margin: 0 0 24px 0;
   font-size: 1.2rem;
   text-align: center;
 `;
 
-const CloseButton = styled.button`
+export const CloseButton = styled.button`
   position: absolute;
   top: 12px;
   right: 12px;
@@ -79,43 +77,9 @@ const CloseButton = styled.button`
   justify-content: center;
   border-radius: 50%;
   transition: all 0.3s ease;
-  
+
   &:hover {
     background-color: var(--secondary-color);
     color: var(--primary-color);
   }
 `;
-
-interface ColorPickerModalProps {
-  onClose: () => void;
-}
-
-export const ColorPickerPanel: React.FC<ColorPickerModalProps> = ({ onClose }) => {
-  const { colors, setColors } = useTheme();
-
-  const handleColorChange = (colorKey: keyof typeof colors, value: string) => {
-    setColors({
-      ...colors,
-      [colorKey]: value
-    });
-  };
-
-  return (
-    <SidePanel>
-      <CloseButton onClick={onClose}>×</CloseButton>
-      <Title>Theme Colors</Title>
-      <ColorPickerContainer>
-        {Object.entries(colors).map(([key, value]) => (
-          <ColorRow key={key}>
-            <Label>{key}:</Label>
-            <ColorInput
-              type="color"
-              value={value}
-              onChange={(e) => handleColorChange(key as keyof typeof colors, e.target.value)}
-            />
-          </ColorRow>
-        ))}
-      </ColorPickerContainer>
-    </SidePanel>
-  );
-}; 
