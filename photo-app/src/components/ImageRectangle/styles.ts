@@ -110,7 +110,6 @@ export const FiltersButtonContainer = styled.div`
   gap: 0.5rem;
   overflow-x: auto;
   padding: 0.5rem;
-  margin-top: 1rem;
   scrollbar-width: thin; /* Firefox */
   -ms-overflow-style: none; /* Internet Explorer 10+ */
 

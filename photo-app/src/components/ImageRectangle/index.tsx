@@ -46,9 +46,9 @@ const PARAMETRIC_FILTERS = {
 
 const PARAMETRIC_FILTERS_VALUES = {
   blur: { min: 0, max: 20, defaultValue: 5 },
-  brighten: { min: -15, max: 15, defaultValue: 0 },
-  contrast: { min: 0, max: 10, defaultValue: 1 },
-  vignette: { min: 0, max: 1, defaultValue: 0.5 },
+  brighten: { min: -20, max: 20, defaultValue: 0 },
+  contrast: { min: 0, max: 15, defaultValue: 1 },
+  vignette: { min: 0.5, max: 1.5, defaultValue: 0.5 },
 };
 
 type FilterName = keyof typeof FILTERS;
@@ -212,7 +212,7 @@ const ImageRectangle: React.FC = () => {
   );
 
   return (
-    <div>
+    <div style={{ gap: ".5rem", display: "flex", flexDirection: "column" }}>
       <FiltersButtonContainer>
         <ActionButton onClick={handleRestoreOriginal} disabled={!selectedImage}>
           <svg
