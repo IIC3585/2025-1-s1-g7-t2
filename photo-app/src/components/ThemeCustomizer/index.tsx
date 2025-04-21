@@ -19,8 +19,8 @@ export const ThemeCustomizer: React.FC = () => {
     <div className="theme-controls">
       <div>
         <label>Theme: </label>
-        <select 
-          value={theme} 
+        <select
+          value={theme}
           onChange={(e) => handleThemeChange(e.target.value as 'light' | 'dark' | 'custom')}
         >
           <option value="light">Light</option>
