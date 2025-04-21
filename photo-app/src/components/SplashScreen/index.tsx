@@ -15,14 +15,14 @@ export const SplashScreen: React.FC = () => {
 
   return (
     <div className={`app-splash-screen ${hidden ? 'hidden' : ''}`}>
-      <img 
-        src="/pwa-512x512.png" 
-        alt="App Logo" 
-        style={{ 
-          width: '200px', 
+      <img
+        src="/pwa-512x512.png"
+        alt="App Logo"
+        style={{
+          width: '200px',
           height: '200px',
           animation: 'pulse 2s infinite'
-        }} 
+        }}
       />
       <style>
         {`
@@ -35,4 +35,4 @@ export const SplashScreen: React.FC = () => {
       </style>
     </div>
   );
-}; 
+};
