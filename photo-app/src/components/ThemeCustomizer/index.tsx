@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 
 export const ThemeCustomizer: React.FC = () => {
   const { theme, colors, setTheme, setColors } = useTheme();
@@ -67,4 +67,4 @@ export const ThemeCustomizer: React.FC = () => {
       )}
     </div>
   );
-}; 
+};
