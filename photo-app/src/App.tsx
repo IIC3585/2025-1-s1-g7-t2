@@ -29,11 +29,11 @@ const MainContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top: 60px; // Space for the theme controls at the top
+  margin-top: 20px; // Space for the theme controls at the top
 
   @media (max-width: 768px) {
     gap: 0.5rem;
-    margin-top: 80px;
+    margin-top: 10px;
   }
 `;
 

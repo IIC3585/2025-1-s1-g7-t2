@@ -106,13 +106,27 @@ export const ButtonContainer = styled.div`
 `;
 
 export const FiltersButtonContainer = styled.div`
-  left: 0;
-  right: 0;
   display: flex;
-  justify-content: center;
-  gap: 16px;
-  padding: 16px 16px;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem;
+  margin-top: 1rem;
+  scrollbar-width: thin; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
 `;
+
 
 export const ActionButton = styled.button`
   background-color: var(--primary-color);
